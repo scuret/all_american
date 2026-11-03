@@ -37,6 +37,8 @@ Target: push to `main` on `github.com/scuret/all_american` → Vercel builds and
 
 Leave the Twilio / Resend values blank to run in dev-outbox mode (nothing sent, everything visible in Delivery log).
 
+**`DEV_LOGIN=1`** shows sign-in codes/links on screen when no provider is configured. It is set on the prototype so you can sign in before Twilio/Resend exist. **Remove it as soon as either provider is configured**; with it set, anyone who knows a registered email or phone can sign in as that person.
+
 ## 4. Twilio (SMS)
 
 1. Buy a local 314 number (Phone Numbers → Buy).

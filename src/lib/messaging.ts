@@ -28,6 +28,14 @@ export function isDevMode(channel: Channel) {
   return channel === "SMS" ? !twilioConfigured() : !resendConfigured();
 }
 
+/**
+ * Whether sign-in codes/links may be shown on screen. Only when the provider isn't configured AND
+ * DEV_LOGIN=1 is set (or we're running locally). Never leave DEV_LOGIN set once Twilio/Resend are live.
+ */
+export function showLoginCodeOnScreen(channel: Channel) {
+  return isDevMode(channel) && (process.env.NODE_ENV !== "production" || process.env.DEV_LOGIN === "1");
+}
+
 export async function sendOne(opts: SendOptions) {
   const { channel, to } = opts;
   const address = channel === "SMS" ? to.phone : to.email;

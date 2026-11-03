@@ -4,7 +4,7 @@ import { users } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { issueLoginToken, consumeLoginToken, createSession } from "@/lib/auth";
 import { isEmail, normalizePhone } from "@/lib/phone";
-import { sendOne, isDevMode } from "@/lib/messaging";
+import { sendOne, showLoginCodeOnScreen } from "@/lib/messaging";
 import { redirect } from "next/navigation";
 
 export type LoginState = { error?: string; sent?: "SMS" | "EMAIL"; userId?: string; devCode?: string; to?: string };
@@ -28,7 +28,7 @@ export async function requestLogin(_prev: LoginState, form: FormData): Promise<L
     const link = `${appUrl}/login/verify?token=${token.code}`;
     await sendOne({ channel: "EMAIL", to: { ...user, emailOptIn: true }, subject: "Your All American sign-in link", body: `Hi ${user.name.split(" ")[0]},\n\nClick to sign in to All American Inline Hockey:\n${link}\n\nThis link expires in 15 minutes. If you didn't request it, you can ignore this email.`, context: { kind: "LOGIN" } });
   }
-  return { sent: channel, userId: user.id, to: phone ?? email!, devCode: isDevMode(channel) ? token.code : undefined };
+  return { sent: channel, userId: user.id, to: phone ?? email!, devCode: showLoginCodeOnScreen(channel) ? token.code : undefined };
 }
 
 export async function verifyCode(_prev: LoginState, form: FormData): Promise<LoginState> {
