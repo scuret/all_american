@@ -3,6 +3,13 @@ import { LoginForm } from "./login-form";
 import { getCurrentUser } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Sign in",
+  description: "Sign in to All American Inline Hockey to see your schedule, confirm games, and get rink updates.",
+  openGraph: { title: "Sign in · All American Inline Hockey", url: "/login" },
+};
 
 export default async function LoginPage() {
   const u = await getCurrentUser();
