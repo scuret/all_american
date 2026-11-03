@@ -1,26 +1,108 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --rink-red: #b00000;
+  --rink-red-dark: #860000;
+  --rink-red-hot: #e02b20;
+  --ink: #1f1f1f;
+  --ink-2: #333333;
+  --ink-3: #666666;
+  --line: #e3e3e3;
+  --paper: #ffffff;
+  --paper-2: #f5f5f5;
+  --paper-3: #ececec;
+  --ice: #eef3f8;
+  --ok: #1f8a3d;
+  --warn: #c7811a;
+  --info: #0c71c3;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-red: var(--rink-red);
+  --color-red-dark: var(--rink-red-dark);
+  --color-red-hot: var(--rink-red-hot);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-line: var(--line);
+  --color-paper: var(--paper);
+  --color-paper-2: var(--paper-2);
+  --color-paper-3: var(--paper-3);
+  --color-ice: var(--ice);
+  --color-ok: var(--ok);
+  --color-warn: var(--warn);
+  --color-info: var(--info);
+  --font-sans: "Open Sans", "Segoe UI", Arial, Helvetica, sans-serif;
+  --font-display: "Open Sans", "Segoe UI", Arial, Helvetica, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  background: var(--paper-2);
+  color: var(--ink-2);
+  font-family: var(--font-sans);
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  min-height: 100dvh;
+}
+
+h1, h2, h3, .display {
+  font-family: var(--font-display);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.hairline { border-color: var(--line); }
+
+/* Buttons */
+.btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-md px-4 py-2.5 text-sm font-bold tracking-wide transition active:scale-[.98] disabled:opacity-50 disabled:pointer-events-none;
+  min-height: 44px;
+}
+.btn-primary { background: var(--rink-red); color: #fff; }
+.btn-primary:hover { background: var(--rink-red-dark); }
+.btn-secondary { background: #fff; color: var(--ink); border: 1px solid var(--line); }
+.btn-secondary:hover { background: var(--paper-2); }
+.btn-ghost { background: transparent; color: var(--ink-2); }
+.btn-ghost:hover { background: var(--paper-3); }
+.btn-ok { background: var(--ok); color: #fff; }
+.btn-danger { background: #fff; color: var(--rink-red); border: 1px solid var(--rink-red); }
+.btn-danger:hover { background: #fff3f3; }
+.btn-sm { @apply px-3 py-1.5 text-xs; min-height: 36px; }
+
+/* Inputs */
+.input, .select, .textarea {
+  @apply w-full rounded-md border bg-white px-3 py-2.5 text-sm text-ink outline-none;
+  border-color: var(--line);
+  min-height: 44px;
+}
+.input:focus, .select:focus, .textarea:focus { border-color: var(--rink-red); box-shadow: 0 0 0 3px rgba(176,0,0,.12); }
+.textarea { min-height: 110px; }
+.label { @apply block text-xs font-bold uppercase tracking-wider text-ink-3 mb-1.5; }
+
+/* Cards */
+.card { @apply rounded-lg bg-white border; border-color: var(--line); }
+.card-pad { @apply p-4 md:p-5; }
+
+/* Badges */
+.badge { @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider; }
+.badge-red { background: #fde8e8; color: var(--rink-red); }
+.badge-ok { background: #e3f4e8; color: var(--ok); }
+.badge-warn { background: #fdf0dc; color: #9a5f0a; }
+.badge-gray { background: var(--paper-3); color: var(--ink-3); }
+.badge-info { background: #e3effa; color: var(--info); }
+.badge-ink { background: var(--ink); color: #fff; }
+
+/* Table */
+.table { @apply w-full text-sm; }
+.table th { @apply text-left text-[11px] font-bold uppercase tracking-wider text-ink-3 px-3 py-2 border-b; border-color: var(--line); }
+.table td { @apply px-3 py-2.5 border-b align-middle; border-color: var(--paper-3); }
+.table tr:last-child td { border-bottom: 0; }
+
+/* Diagonal stripe accent used in headers */
+.stripe {
+  background-image: repeating-linear-gradient(135deg, rgba(255,255,255,.035) 0 14px, transparent 14px 28px);
 }
