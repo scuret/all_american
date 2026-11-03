@@ -8,9 +8,8 @@ import { addDays, addHours, setHours, setMinutes, startOfDay, subDays } from "da
 import { fromZonedTime } from "date-fns-tz";
 import { sql } from "drizzle-orm";
 
-const pool = new Pool({ connectionString: process.env.DATABASE_URL, ssl: process.env.DATABASE_URL?.includes("localhost") ? undefined : { rejectUnauthorized: false } });
-const db = drizzle(pool, { schema: s });
 const TZ = "America/Chicago";
+type SeedDb = ReturnType<typeof drizzle<typeof s>>;
 
 const FIRST = ["Jake", "Tyler", "Matt", "Chris", "Ryan", "Nick", "Josh", "Kyle", "Brandon", "Zach", "Austin", "Drew", "Cody", "Derek", "Evan", "Sean", "Alex", "Brett", "Colin", "Dan", "Eric", "Grant", "Ian", "Jordan", "Kevin", "Logan", "Mike", "Nate", "Owen", "Pat", "Quinn", "Rob", "Sam", "Tom", "Vince", "Will", "Aaron", "Ben", "Cole", "Dylan", "Mason", "Liam", "Noah", "Ethan", "Lucas", "Jackson", "Carter", "Wyatt", "Hunter", "Blake", "Maya", "Emma", "Ava", "Sophia", "Olivia", "Riley", "Kate", "Sara", "Jenna", "Lauren"];
 const LAST = ["Schmidt", "Meyer", "Mueller", "Koenig", "Becker", "Wagner", "Fischer", "Weber", "Schaefer", "Hoffman", "Klein", "Wolf", "Braun", "Zimmerman", "Krueger", "Hartmann", "Lange", "Werner", "Krause", "Lehmann", "Kelly", "Murphy", "O'Brien", "Walsh", "Ryan", "Sullivan", "Burke", "Doyle", "Nguyen", "Garcia", "Martinez", "Rodriguez", "Johnson", "Williams", "Brown", "Jones", "Miller", "Davis", "Wilson", "Anderson", "Taylor", "Thomas", "Moore", "Jackson", "Martin", "Lee", "Thompson", "White", "Harris", "Clark"];
@@ -30,10 +29,12 @@ function person(roles: s.Role[], opts: Partial<typeof s.users.$inferInsert> = {}
 
 const TEAM_NAMES = ["Ice Pirates", "Rink Rats", "Red Line", "Night Shift", "Puck Dynasty", "The Grinders", "Gateway Sting", "Arch Rivals", "South County Snipers", "Mound City Mayhem", "Top Shelf", "Dirty Dangles", "Benchwarmers", "Blue Liners", "Crease Lightning", "Slapshot Social", "Meramec Mustangs", "Lemay Lightning", "Oakville Outlaws", "Affton Avalanche", "Kirkwood Kings", "Fenton Flyers", "Arnold Admirals", "Webster Wolves", "Jefferson Barracks", "Riverfront Rush", "Tower Grove Titans", "Shrewsbury Sharks"];
 let teamNameIdx = 0;
+let pIdx = 0;
 function teamName() { return TEAM_NAMES[teamNameIdx++ % TEAM_NAMES.length]; }
 const COLORS = ["#B00000", "#0C71C3", "#1F8A3D", "#111111", "#C7811A", "#5B2C83", "#0B7285", "#E02B20"];
 
-async function main() {
+export async function runSeed(db: SeedDb) {
+  seedIdx = 7; phoneCounter = 5550100; usedNames.clear(); teamNameIdx = 0; pIdx = 0;
   console.log("Wiping…");
   await db.execute(sql`TRUNCATE users, leagues, tournaments, maintenance_tasks, rink_blocks, equipment, messages, inbound_messages, settings RESTART IDENTITY CASCADE`);
 
@@ -43,7 +44,7 @@ async function main() {
   const refs = await db.insert(s.users).values(Array.from({ length: 7 }, () => person(["REFEREE"]))).returning();
   const goalies = await db.insert(s.users).values(Array.from({ length: 8 }, () => person(["GOALIE"]))).returning();
   const playersPool = await db.insert(s.users).values(Array.from({ length: 480 }, () => person(["PLAYER"]))).returning();
-  let pIdx = 0;
+  pIdx = 0;
   const takePlayers = (n: number) => playersPool.slice(pIdx, (pIdx += n));
   const now = new Date();
 
@@ -225,7 +226,12 @@ async function main() {
   await db.insert(s.settings).values({ key: "rink", value: { name: "All American Inline Hockey", phone: "(314) 487-4625", email: "allamericanhockey85@gmail.com", address: "All American Sports Mall, St. Louis, MO" } });
 
   console.log("Seeded. Sign in as scuret@gmail.com (admin) or any example.com user; codes show on screen in dev mode.");
-  await pool.end();
+  return { users: 499 + 2, games: (await db.select({ id: s.games.id }).from(s.games)).length };
 }
 
-main().catch((e) => { console.error(e); process.exit(1); });
+// CLI entry: npm run db:seed
+if (process.argv[1] && /seed\.ts$/.test(process.argv[1])) {
+  const pool = new Pool({ connectionString: process.env.DATABASE_URL, ssl: process.env.DATABASE_URL?.includes("localhost") ? undefined : { rejectUnauthorized: false } });
+  const db = drizzle(pool, { schema: s });
+  runSeed(db).then(() => pool.end()).catch((e) => { console.error(e); process.exit(1); });
+}

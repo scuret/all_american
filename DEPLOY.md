@@ -11,11 +11,11 @@ Target: push to `main` on `github.com/scuret/all_american` → Vercel builds and
 
 1. Project → **Storage → Create Database → Neon** (free tier is plenty).
 2. Vercel injects `DATABASE_URL` (pooled) automatically. Use that one.
-3. Create the tables once from your laptop:
+3. Tables are created automatically: the build command is `drizzle-kit push --force && next build`, so every deploy syncs the schema to Neon.
+   Optional demo data (this **wipes** the database; don't run it on real data):
    ```bash
-   DATABASE_URL="<the Neon URL from Vercel>" npm run db:push
+   curl -X POST -H "Authorization: Bearer $CRON_SECRET" https://<app>/api/admin/seed
    ```
-   Optional demo data: `DATABASE_URL=... npm run db:seed` (this **wipes** the database; don't run it on real data).
 4. Create your admin: either seed, or insert one row:
    ```sql
    insert into users (id, name, email, phone, roles, sms_opt_in) values ('admin1', 'Stephen Curet', 'scuret@gmail.com', '+19048601980', '{ADMIN}', true);

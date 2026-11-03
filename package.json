@@ -7,7 +7,7 @@
     "db:push": "drizzle-kit push",
     "db:seed": "tsx src/db/seed.ts",
     "db:studio": "drizzle-kit studio",
-    "build": "next build",
+    "build": "drizzle-kit push --force && next build",
     "start": "next start",
     "lint": "eslint"
   },
